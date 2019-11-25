@@ -1,0 +1,28 @@
+body {
+    font-family: 'Nanum Myeongjo', serif;
+    background-color: #fffaf7;
+}
+
+main {
+    max-width: 70ch;
+    padding: 2ch;
+    margin: auto;
+}
+
+a {
+    text-decoration: none;
+    outline: 0;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+ul {
+    list-style-type: none;
+    padding: 1rem 0;
+}
+
+li {
+    margin-bottom: 0.5rem;
+}

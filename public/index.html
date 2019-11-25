@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>zachary.hughes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Myeongjo" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <style>
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>zachary.hughes</h1>
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" aria-describedby="username">
+            </p>
+            <p>
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password">
+            </p>
+            <p>
+                <input type="submit" onclick="postLogin()">
+            </p>
+        </div>
+    </div>
+    <nav>
+        <ul>
+            <a href="/users"><li>about</li></a>
+            <a href="/dev/all"><li>dev</li></a>
+            <a href="/etc/all"><li>etc</li></a>
+            <a href="/music/all"><li>music</li></a>
+            <a href="/film/all"><li>film</li></a>
+        </ul>
+    </nav>
+</main>
+<script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("myBtn");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    function goToAdmin(e) {
+        if (e.keyCode === 27) {
+            if (localStorage.getItem('token')) {
+                window.location = '/admin';
+            } else {
+                modal.style.display = "block";
+            }
+        }
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    document.onkeydown = goToAdmin;
+
+    function saveAuthHeader(request) {
+        var headers = request.getAllResponseHeaders();
+        // Convert the header string into an array
+        // of individual headers
+        var arr = headers.trim().split(/[\r\n]+/);
+        for (var i in arr) {
+            var item = arr[i];
+            var parts = item.split(': ');
+            var header = parts.shift();
+            if (header === 'authorization') {
+                var value = parts.join(': ');
+                localStorage.setItem("token", value);
+                break;
+            }
+        }
+    }
+
+    function postLogin() {
+        console.log('inside login');
+        var data = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+        };
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/login', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                saveAuthHeader(this);
+                modal.style.display = "none";
+            }
+        }
+        xhr.send(JSON.stringify(data));
+        return false;
+    }
+</script>
+<script src="script.js"></script>
+</body>
+</html>

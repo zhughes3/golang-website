@@ -13,6 +13,7 @@ import (
 func NewRouter() http.Handler {
 	appRouter := mux.NewRouter()
 
+
 	for _, r := range getRoutes() {
 		var handler http.Handler
 		handler = r.HandlerFunc
@@ -22,6 +23,7 @@ func NewRouter() http.Handler {
 		appRouter.Handle(r.Pattern, handler).Methods(r.Method)
 	}
 
+	initFileServer(appRouter)
 	loggedRouter := handlers.LoggingHandler(os.Stdout, appRouter)
 	return loggedRouter
 }
@@ -30,4 +32,9 @@ func getRoutes() []router.Route {
 	var routes []router.Route
 	routes = append(routes, user.Routes...)
 	return routes
+}
+
+func initFileServer(r *mux.Router) {
+	fs := http.FileServer(http.Dir("public/"))
+	r.PathPrefix("/").Handler(http.StripPrefix("/", fs)).Methods("GET")
 }
